@@ -1,0 +1,84 @@
+---
+title: "US Tilapia Imports"
+author: "Rachel Swick"
+date: "2024-08-16"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r}
+us_tilapia_imports <- read_csv(here::here("data", "us_tilapia_imports.csv"))
+
+by_country <- us_tilapia_imports |> pivot_longer(cols = -country, 
+                           values_to = "imports", names_to = "years")
+
+class(by_country$imports)
+
+by_country <- mutate(by_country, years = as.numeric(by_country$years))
+
+```
+
+```{r}
+yearly_tilapia_tot <- by_country |> dplyr::group_by(years) |> 
+  summarize(tilapia = sum(imports, na.rm = TRUE))
+
+all_country_fig <- ggplot(data = yearly_tilapia_tot, aes(x = years, y = tilapia))+
+  geom_line()+
+  xlab("Year")+
+  ylab("Total Tilapia Imports from All Countries")
+
+ggsave(here::here("figs", "all_country_fig.png"))
+```
+
+```{r}
+subset_tilapia <- by_country |> dplyr::filter(country == "Ecuador" |
+                                                    country == "Honduras" |
+                                                    country == "Costa Rica" |
+                                                    country == "Mexico") |>
+  dplyr::select(country, years, imports)
+
+subset_country <- ggplot(data = subset_tilapia, aes(x = years, y = imports, color = country))+
+  geom_line()+
+  xlab("Year")+
+  ylab("Amount of Tilapia Imported")+
+  labs(title = "Amount of Tilapia Imported from Costa Rica, Ecuador, Honduras, and Mexico")+
+  theme_minimal()
+
+ggsave(here::here("figs", "subset_country.jpg"),
+       width = 8,
+       height = 6)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

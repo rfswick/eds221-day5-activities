@@ -1,0 +1,45 @@
+---
+title: "Make a Function"
+author: "Rachel Swick"
+date: "2024-08-16"
+output: html_document
+---
+
+# Creating a function in R Markdown of the Simple Method used to calculate the volume of stormwater expected for a watershed
+```{r}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+source(here::here("src", "storm_runoff.R"))
+```
+
+```{r}
+IA_seq <- seq(from = 0.6, to = 0.8, by = 0.01)
+predicted_volume <- predict_runoff(IA = IA_seq, A = 182)
+predict_runoff_df <- data.frame(IA_seq, predicted_volume)
+```
+
+```{r}
+image_runoff <- ggplot(data = predict_runoff_df, aes(x = IA_seq,
+                                     y = predicted_volume))+
+  geom_point()+
+  geom_line()+
+  xlab("Fraction of Watershed Considered 'Impervious'")+
+  ylab("Predicted Volume of Stormwater in Cubic Feet")
+
+ggsave(here::here("figs", "image_runoff.png"),
+       width = 6,
+       height = 5)
+```
+
+
+
+
+
+
+
+
+
+
